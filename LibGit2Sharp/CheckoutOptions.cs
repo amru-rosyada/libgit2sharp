@@ -13,13 +13,20 @@ namespace LibGit2Sharp
         public CheckoutModifiers CheckoutModifiers { get; set; }
 
         /// <summary>
-        /// Callback method to report checkout progress updates through.
+        /// The flags specifying what conditions are
+        /// reported through the OnCheckoutNotify delegate.
         /// </summary>
-        public CheckoutProgressHandler OnCheckoutProgress { get; set; }
+        public CheckoutNotifyFlags CheckoutNotifyFlags { get; set; }
 
         /// <summary>
-        /// Options to manage checkout notifications.
+        /// Delegate to be called during checkout for files that match
+        /// desired filter specified with the NotifyFlags property.
         /// </summary>
-        public CheckoutNotificationOptions CheckoutNotificationOptions { get; set; }
+        public CheckoutNotifyHandler OnCheckoutNotify { get; set; }
+
+        /// Delegate through which checkout will notify callers of
+        /// certain conditions. The conditions that are reported is
+        /// controlled with the CheckoutNotifyFlags property.
+        public CheckoutProgressHandler OnCheckoutProgress { get; set; }
     }
 }
