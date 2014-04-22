@@ -1,11 +1,12 @@
-﻿using LibGit2Sharp.Handlers;
+﻿using LibGit2Sharp.Core;
+using LibGit2Sharp.Handlers;
 
 namespace LibGit2Sharp
 {
     /// <summary>
     /// Collection of parameters controlling Checkout behavior.
     /// </summary>
-    public sealed class CheckoutOptions
+    public sealed class CheckoutOptions : IConvertableToGitCheckoutOpts
     {
         /// <summary>
         /// Options controlling checkout behavior.
@@ -28,12 +29,21 @@ namespace LibGit2Sharp
         /// </summary>
         public CheckoutNotifyFlags CheckoutNotifyFlags { get; set; }
 
+        CheckoutStrategy IConvertableToGitCheckoutOpts.CheckoutStrategy
+        {
+            get
+            {
+                return CheckoutModifiers.HasFlag(CheckoutModifiers.Force) ?
+                    CheckoutStrategy.GIT_CHECKOUT_FORCE : CheckoutStrategy.GIT_CHECKOUT_SAFE;
+            }
+        }
+
         /// <summary>
         /// Generate a <see cref="CheckoutCallbacks"/> object with the delegates
-        /// hooked up to the native callbacks./>
+        /// hooked up to the native callbacks.
         /// </summary>
         /// <returns></returns>
-        internal CheckoutCallbacks GenerateCallbacks()
+        CheckoutCallbacks IConvertableToGitCheckoutOpts.GenerateCallbacks()
         {
             return CheckoutCallbacks.From(OnCheckoutProgress, OnCheckoutNotify);
         }

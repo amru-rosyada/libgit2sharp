@@ -147,4 +147,17 @@ namespace LibGit2Sharp.Core
         public IntPtr our_label;
         public IntPtr their_label;
     }
+
+    /// <summary>
+    /// An inteface for objects that specify parameters from which a
+    /// GitCheckoutOpts struct can be populated.
+    /// </summary>
+    internal interface IConvertableToGitCheckoutOpts
+    {
+        CheckoutCallbacks GenerateCallbacks();
+
+        CheckoutStrategy CheckoutStrategy { get; }
+
+        CheckoutNotifyFlags CheckoutNotifyFlags { get; }
+    }
 }
