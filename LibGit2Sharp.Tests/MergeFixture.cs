@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using LibGit2Sharp.Tests.TestHelpers;
 using Xunit;
 using Xunit.Extensions;
@@ -419,6 +422,57 @@ namespace LibGit2Sharp.Tests
 
                 Assert.Equal(expectedMergeStatus, result.Status);
                 Assert.False(repo.Index.RetrieveStatus().Any());
+            }
+        }
+
+        [Theory]
+        [InlineData(CheckoutFileConflictStrategy.Ours)]
+        [InlineData(CheckoutFileConflictStrategy.Theirs)]
+        public void CanSpecifyConflictFileStrategy(CheckoutFileConflictStrategy conflictStrategy)
+        {
+            const string conflictFile = "a.txt";
+            const string conflictBranchName = "conflicts";
+
+            string path = CloneMergeTestRepo();
+            using (var repo = new Repository(path))
+            {
+                Branch branch = repo.Branches[conflictBranchName];
+                Assert.NotNull(branch);
+
+                MergeOptions mergeOptions = new MergeOptions()
+                {
+                    FileConflictStrategy = conflictStrategy,
+                };
+
+                MergeResult result = repo.Merge(branch, Constants.Signature, mergeOptions);
+                Assert.Equal(MergeStatus.Conflicts, result.Status);
+
+                // Get the information on the conflict.
+                Conflict conflict = repo.Index.Conflicts[conflictFile];
+
+                Assert.NotNull(conflict);
+                Assert.NotNull(conflict.Theirs);
+                Assert.NotNull(conflict.Ours);
+
+                // Get the blob containing the expected content.
+                Blob expectedBlob = null;
+                switch(conflictStrategy)
+                {
+                    case CheckoutFileConflictStrategy.Theirs:
+                        expectedBlob = repo.Lookup<Blob>(conflict.Theirs.Id);
+                        break;
+                    case CheckoutFileConflictStrategy.Ours:
+                        expectedBlob = repo.Lookup<Blob>(conflict.Ours.Id);
+                        break;
+                    default:
+                        throw new Exception("Unexpected FileConflictStrategy");
+                }
+
+                Assert.NotNull(expectedBlob);
+
+                // Check the content of the file on disk matches what is expected.
+                string expectedContent = expectedBlob.GetContentText(new FilteringOptions(conflictFile));
+                Assert.Equal(expectedContent, File.ReadAllText(Path.Combine(repo.Info.WorkingDirectory, conflictFile)));
             }
         }
 

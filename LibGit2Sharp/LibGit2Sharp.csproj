@@ -69,6 +69,7 @@
     <Compile Include="BranchTrackingDetails.cs" />
     <Compile Include="BranchUpdater.cs" />
     <Compile Include="CheckoutCallbacks.cs" />
+    <Compile Include="CheckoutFileConflictStrategy.cs" />
     <Compile Include="CheckoutModifiers.cs" />
     <Compile Include="CheckoutNotificationOptions.cs" />
     <Compile Include="CheckoutOptions.cs" />

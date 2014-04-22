@@ -14,11 +14,9 @@ namespace LibGit2Sharp.Core
         /// <summary>
         /// Create wrapper around <see cref="GitCheckoutOpts"/> from <see cref="CheckoutOptions"/>.
         /// </summary>
-        /// <param name="options">Checkout options to create native GitCheckoutOpts structure from.</param>
-        /// <param name="checkoutStrategy">Default strategy to use based on the operation.
-        /// This usually depends on the operation performing the checkout (e.g. Checkout, Merge, Clone).</param>
+        /// <param name="options">Options to create native GitCheckoutOpts structure from.</param>
         /// <param name="paths">Paths to checkout.</param>
-        public GitCheckoutOptsWrapper(CheckoutOptions options, CheckoutStrategy checkoutStrategy, FilePath[] paths = null)
+        public GitCheckoutOptsWrapper(IConvertableToGitCheckoutOpts options, FilePath[] paths = null)
         {
             Callbacks = options.GenerateCallbacks();
 
@@ -30,7 +28,7 @@ namespace LibGit2Sharp.Core
             Options = new GitCheckoutOpts
             {
                 version = 1,
-                checkout_strategy = checkoutStrategy,
+                checkout_strategy = options.CheckoutStrategy,
                 progress_cb = Callbacks.CheckoutProgressCallback,
                 notify_cb = Callbacks.CheckoutNotifyCallback,
                 notify_flags = options.CheckoutNotifyFlags,
@@ -44,7 +42,8 @@ namespace LibGit2Sharp.Core
         public GitCheckoutOpts Options { get; set; }
 
         /// <summary>
-        /// I thought this would be needed so the Callbacks do not get garbage collected...
+        /// The managed class mapping native callbacks into the
+        /// corresponding managed delegate.
         /// </summary>
         public CheckoutCallbacks Callbacks { get; private set; }
 
