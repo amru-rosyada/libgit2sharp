@@ -28,5 +28,15 @@ namespace LibGit2Sharp
         /// certain conditions. The conditions that are reported is
         /// controlled with the CheckoutNotifyFlags property.
         public CheckoutProgressHandler OnCheckoutProgress { get; set; }
+
+        /// <summary>
+        /// Generate a <see cref="CheckoutCallbacks"/> object with the delegates
+        /// hooked up to the native callbacks./>
+        /// </summary>
+        /// <returns></returns>
+        internal CheckoutCallbacks GenerateCallbacks()
+        {
+            return CheckoutCallbacks.GenerateCheckoutCallbacks(OnCheckoutProgress, OnCheckoutNotify);
+        }
     }
 }
