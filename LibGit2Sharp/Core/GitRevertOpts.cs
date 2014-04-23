@@ -10,7 +10,7 @@ namespace LibGit2Sharp.Core
         // For merge commits, the "mainline" is treated as the parent
         public uint Mainline = 0;
 
-        public GitMergeTreeOpts MergeTreeOpts = new GitMergeTreeOpts {Version = 1};
+        public GitMergeOpts mergeOpts = new GitMergeOpts {Version = 1};
 
         public GitCheckoutOpts CheckoutOpts = new GitCheckoutOpts {version = 1};
     }

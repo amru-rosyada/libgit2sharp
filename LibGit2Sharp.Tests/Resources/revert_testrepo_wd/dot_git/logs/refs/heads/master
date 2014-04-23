@@ -1,0 +1,5 @@
+0000000000000000000000000000000000000000 72c752e15c571c790e90836d69490ad7795a22b0 Jameson Miller <jamill@microsoft.com> 1398288126 -0400	commit (initial): Initial commit
+72c752e15c571c790e90836d69490ad7795a22b0 1b3d2ae90ff5145fa0baf4ecb05be256498bf632 Jameson Miller <jamill@microsoft.com> 1398288176 -0400	commit: Second commit
+1b3d2ae90ff5145fa0baf4ecb05be256498bf632 cb4f7f0eca7a0114cdafd8537332aa17de36a4e9 Jameson Miller <jamill@microsoft.com> 1398288289 -0400	commit: Third commit
+cb4f7f0eca7a0114cdafd8537332aa17de36a4e9 b6fbb29b625aabe0fb5736da6fd61d4147e4405e Jameson Miller <jamill@microsoft.com> 1398288369 -0400	commit: Fourth commit
+b6fbb29b625aabe0fb5736da6fd61d4147e4405e cb4f7f0eca7a0114cdafd8537332aa17de36a4e9 Jameson Miller <jamill@microsoft.com> 1398288420 -0400	reset: moving to head~1

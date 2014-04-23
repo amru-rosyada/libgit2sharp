@@ -1190,10 +1190,43 @@ namespace LibGit2Sharp
             }
         }
 
-        public void Revert(Commit commit, RevertOptions options = null)
+        /// <summary>
+        /// Revert the specified commit.
+        /// </summary>
+        /// <param name="commit">The <see cref="Commit"/> to revert.</param>
+        /// <param name="reverter">The <see cref="Signature"/> of who is performing the reverte.</param>
+        /// <param name="options"><see cref="RevertOptions"/> controlling revert behavior.</param>
+        public Commit Revert(Commit commit, Signature reverter, RevertOptions options = null)
         {
+            Ensure.ArgumentNotNull(commit, "commit");
+            Ensure.ArgumentNotNull(reverter, "reverter");
+
             options = options ?? new RevertOptions();
-            Proxy.git_revert(handle, commit.Id.Oid, options.ToNative());
+
+            Commit revertResult = null;
+
+            using (GitCheckoutOptsWrapper checkoutOptionsWrapper = new GitCheckoutOptsWrapper(options))
+            {
+                GitRevertOpts gitRevertOpts = new GitRevertOpts()
+                {
+                    Mainline = (uint) options.Mainline,
+                    mergeOpts = new GitMergeOpts()
+                    {
+                        Version = 1,
+                    },
+
+                    CheckoutOpts = checkoutOptionsWrapper.Options,
+                };
+
+                Proxy.git_revert(handle, commit.Id.Oid, gitRevertOpts);
+
+                if (options.CommitOnSuccess && Index.IsFullyMerged)
+                {
+                    revertResult = this.Commit(Info.Message, author: reverter, committer: reverter);
+                }
+            }
+
+            return revertResult;
         }
 
         /// <summary>
