@@ -1,7 +1,7 @@
 # Travis-CI Build for libgit2sharp
 # see travis-ci.org for details
 
-language: c
+language: ruby
 
 os:
  - linux
