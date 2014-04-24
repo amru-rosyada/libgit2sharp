@@ -2,10 +2,15 @@
 # see travis-ci.org for details
 
 language: c
+os:
+ - linux
+ - osx
 
 # Make sure CMake and Mono are installed
 install:
- - sudo apt-get install cmake mono-devel mono-gmcs
+ - date -u
+ - uname -a
+ - if [[ $TRAVIS_OS_NAME = 'linux' ]]; then sudo apt-get install cmake mono-devel mono-gmcs; fi
 
 # Build libgit2, LibGit2Sharp and run the tests
 script:
