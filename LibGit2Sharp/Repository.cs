@@ -1277,7 +1277,8 @@ namespace LibGit2Sharp
 
             var mergeOptions = new GitMergeOpts
                 {
-                    Version = 1
+                    Version = 1,
+                    MergeFileFavorFlags = options.MergeFileFavor,
                 };
 
             GitCheckoutOptsWrapper checkoutOptionsWrapper = new GitCheckoutOptsWrapper(options);

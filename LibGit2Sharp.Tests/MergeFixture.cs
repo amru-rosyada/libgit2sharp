@@ -567,6 +567,61 @@ namespace LibGit2Sharp.Tests
         }
 
         [Theory]
+        [InlineData(MergeFileFavor.Ours)]
+        [InlineData(CheckoutFileConflictStrategy.Theirs)]
+        public void MergeCanSpecifyMergeFileFavorOption(MergeFileFavor fileFavorFlag)
+        {
+            const string conflictFile = "a.txt";
+            const string conflictBranchName = "conflicts";
+
+            string path = CloneMergeTestRepo();
+            using (var repo = InitIsolatedRepository(path))
+            {
+                Branch branch = repo.Branches[conflictBranchName];
+                Assert.NotNull(branch);
+
+                var status = repo.Index.RetrieveStatus();
+                MergeOptions mergeOptions = new MergeOptions()
+                {
+                    MergeFileFavor = fileFavorFlag,
+                };
+
+                MergeResult result = repo.Merge(branch, Constants.Signature, mergeOptions);
+
+                Assert.Equal(MergeStatus.NonFastForward, result.Status);
+
+                // Verify that the index and working directory are clean
+                Assert.True(repo.Index.IsFullyMerged);
+                Assert.False(repo.Index.RetrieveStatus().IsDirty);
+
+                // Get the blob containing the expected content.
+                Blob expectedBlob = null;
+                switch (fileFavorFlag)
+                {
+                    case MergeFileFavor.Theirs:
+                        expectedBlob = repo.Lookup<Blob>("3dd9738af654bbf1c363f6c3bbc323bacdefa179");
+                        break;
+                    case MergeFileFavor.Ours:
+                        expectedBlob = repo.Lookup<Blob>("610b16886ca829cebd2767d9196f3c4378fe60b5");
+                        break;
+                    default:
+                        throw new Exception("Unexpected MergeFileFavor");
+                }
+
+                Assert.NotNull(expectedBlob);
+
+                // Verify the index has the expected contents
+                IndexEntry entry = repo.Index[conflictFile];
+                Assert.NotNull(entry);
+                Assert.Equal(expectedBlob.Id, entry.Id);
+
+                // Verify the content of the file on disk matches what is expected.
+                string expectedContent = expectedBlob.GetContentText(new FilteringOptions(conflictFile));
+                Assert.Equal(expectedContent, File.ReadAllText(Path.Combine(repo.Info.WorkingDirectory, conflictFile)));
+            }
+        }
+
+        [Theory]
         [InlineData("refs/heads/normal_merge", FastForwardStrategy.Default, MergeStatus.NonFastForward)]
         [InlineData("fast_forward", FastForwardStrategy.Default, MergeStatus.FastForward)]
         public void CanMergeBranch(string branchName, FastForwardStrategy strategy, MergeStatus expectedMergeStatus)
