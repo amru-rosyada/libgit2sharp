@@ -821,7 +821,7 @@ namespace LibGit2Sharp
         private void CheckoutTree(
             Tree tree,
             IList<string> paths,
-            CheckoutOptions opts)
+            IConvertableToGitCheckoutOpts opts)
         {
 
             using(GitCheckoutOptsWrapper checkoutOptionsWrapper = new GitCheckoutOptsWrapper(opts, ToFilePaths(paths)))
@@ -1219,7 +1219,7 @@ namespace LibGit2Sharp
                             throw new LibGit2SharpException("Unable to perform Fast-Forward merge with mith multiple merge heads.");
                         }
 
-                        mergeResult = FastForwardMerge(mergeHeads[0], merger);
+                        mergeResult = FastForwardMerge(mergeHeads[0], merger, options);
                     }
                     else if (mergeAnalysis.HasFlag(GitMergeAnalysis.GIT_MERGE_ANALYSIS_NORMAL))
                     {
@@ -1235,7 +1235,7 @@ namespace LibGit2Sharp
                             throw new LibGit2SharpException("Unable to perform Fast-Forward merge with mith multiple merge heads.");
                         }
 
-                        mergeResult = FastForwardMerge(mergeHeads[0], merger);
+                        mergeResult = FastForwardMerge(mergeHeads[0], merger, options);
                     }
                     else
                     {
@@ -1309,18 +1309,15 @@ namespace LibGit2Sharp
         /// </summary>
         /// <param name="mergeHead">The merge head handle to fast-forward merge.</param>
         /// <param name="merger">The <see cref="Signature"/> of who is performing the merge.</param>
+        /// <param name="options">Options controlling merge behavior.</param>
         /// <returns>The <see cref="MergeResult"/> of the merge.</returns>
-        private MergeResult FastForwardMerge(GitMergeHeadHandle mergeHead, Signature merger)
+        private MergeResult FastForwardMerge(GitMergeHeadHandle mergeHead, Signature merger, MergeOptions options)
         {
             ObjectId id = Proxy.git_merge_head_id(mergeHead);
             Commit fastForwardCommit = (Commit) Lookup(id, ObjectType.Commit);
             Ensure.GitObjectIsNotNull(fastForwardCommit, id.Sha);
 
-            var checkoutOpts = new CheckoutOptions
-            {
-                CheckoutModifiers = CheckoutModifiers.None,
-            };
-            CheckoutTree(fastForwardCommit.Tree, null, checkoutOpts);
+            CheckoutTree(fastForwardCommit.Tree, null, options);
 
             var reference = Refs.Head.ResolveToDirectReference();
 

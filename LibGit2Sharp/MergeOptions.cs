@@ -19,6 +19,12 @@ namespace LibGit2Sharp
         }
 
         /// <summary>
+        /// The Flags specifying what conditions are
+        /// reported through the OnCheckoutNotify delegate.
+        /// </summary>
+        public CheckoutNotifyFlags CheckoutNotifyFlags { get; set; }
+
+        /// <summary>
         /// Commit the merge if the merge is successful and this is a non-fast-forward merge.
         /// If this is a fast-forward merge, then there is no merge commit and this option
         /// will not affect the merge.
@@ -35,11 +41,23 @@ namespace LibGit2Sharp
         /// </summary>
         public CheckoutFileConflictStrategy FileConflictStrategy { get; set; }
 
+        /// <summary>
+        /// Delegate that checkout progress will be reported through.
+        /// </summary>
+        public CheckoutProgressHandler OnCheckoutProgress { get; set; }
+
+        /// <summary>
+        /// Delegate through which checkout will notify callers of
+        /// certain conditions. The conditions that are reported is
+        /// controlled with the CheckoutNotifyFlags property.
+        /// </summary>
+        public CheckoutNotifyHandler OnCheckoutNotify { get; set; }
+
         #region IConvertableToGitCheckoutOpts
 
         CheckoutCallbacks IConvertableToGitCheckoutOpts.GenerateCallbacks()
         {
-            return CheckoutCallbacks.From(null, null);
+            return CheckoutCallbacks.From(OnCheckoutProgress, OnCheckoutNotify);
         }
 
         CheckoutStrategy IConvertableToGitCheckoutOpts.CheckoutStrategy
@@ -50,11 +68,6 @@ namespace LibGit2Sharp
                        CheckoutStrategy.GIT_CHECKOUT_ALLOW_CONFLICTS |
                        GitCheckoutOptsWrapper.CheckoutStrategyFromFileConflictStrategy(FileConflictStrategy);
             }
-        }
-
-        CheckoutNotifyFlags IConvertableToGitCheckoutOpts.CheckoutNotifyFlags
-        {
-            get { return CheckoutNotifyFlags.None; }
         }
 
         #endregion

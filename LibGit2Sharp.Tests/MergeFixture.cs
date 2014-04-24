@@ -345,6 +345,96 @@ namespace LibGit2Sharp.Tests
         }
 
         [Fact]
+        public void MergeReportsCheckoutProgress()
+        {
+            string repoPath = CloneMergeTestRepo();
+            using (var repo = new Repository(repoPath))
+            {
+                Commit commitToMerge = repo.Branches["normal_merge"].Tip;
+                
+                bool wasCalled = false;
+
+                MergeOptions options = new MergeOptions()
+                {
+                    OnCheckoutProgress = (path, completed, total) => wasCalled = true,
+                };
+
+                MergeResult result = repo.Merge(commitToMerge, Constants.Signature, options);
+
+                Assert.True(wasCalled);
+            }
+        }
+
+        [Fact]
+        public void MergeReportsCheckoutNotifications()
+        {
+            string repoPath = CloneMergeTestRepo();
+            using (var repo = new Repository(repoPath))
+            {
+                Commit commitToMerge = repo.Branches["normal_merge"].Tip;
+
+                bool wasCalled = false;
+                CheckoutNotifyFlags actualNotifyFlags = CheckoutNotifyFlags.None;
+
+                MergeOptions options = new MergeOptions()
+                {
+                    OnCheckoutNotify = (path, notificationType) => { wasCalled = true; actualNotifyFlags = notificationType; return true; },
+                    CheckoutNotifyFlags = CheckoutNotifyFlags.Updated,
+                };
+
+                MergeResult result = repo.Merge(commitToMerge, Constants.Signature, options);
+
+                Assert.True(wasCalled);
+                Assert.Equal(CheckoutNotifyFlags.Updated, actualNotifyFlags);
+            }
+        }
+
+        [Fact]
+        public void FastForwardMergeReportsCheckoutProgress()
+        {
+            string repoPath = CloneMergeTestRepo();
+            using (var repo = new Repository(repoPath))
+            {
+                Commit commitToMerge = repo.Branches["fast_forward"].Tip;
+
+                bool wasCalled = false;
+
+                MergeOptions options = new MergeOptions()
+                {
+                    OnCheckoutProgress = (path, completed, total) => wasCalled = true,
+                };
+
+                MergeResult result = repo.Merge(commitToMerge, Constants.Signature, options);
+
+                Assert.True(wasCalled);
+            }
+        }
+
+        [Fact]
+        public void FastForwardMergeReportsCheckoutNotifications()
+        {
+            string repoPath = CloneMergeTestRepo();
+            using (var repo = new Repository(repoPath))
+            {
+                Commit commitToMerge = repo.Branches["fast_forward"].Tip;
+
+                bool wasCalled = false;
+                CheckoutNotifyFlags actualNotifyFlags = CheckoutNotifyFlags.None;
+
+                MergeOptions options = new MergeOptions()
+                {
+                    OnCheckoutNotify = (path, notificationType) => { wasCalled = true; actualNotifyFlags = notificationType; return true; },
+                    CheckoutNotifyFlags = CheckoutNotifyFlags.Updated,
+                };
+
+                MergeResult result = repo.Merge(commitToMerge, Constants.Signature, options);
+
+                Assert.True(wasCalled);
+                Assert.Equal(CheckoutNotifyFlags.Updated, actualNotifyFlags);
+            }
+        }
+
+        [Fact]
         public void FastForwardNonFastForwardableMergeThrows()
         {
             string path = CloneMergeTestRepo();
