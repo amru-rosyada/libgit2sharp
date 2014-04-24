@@ -435,6 +435,40 @@ namespace LibGit2Sharp.Tests
         }
 
         [Fact]
+        public void MergeCanDetectRenames()
+        {
+            // The environment is set up such that:
+            // file b.txt is edited in the "rename" branch and
+            // edited and renamed in the "rename_source" branch.
+            // The edits are automergable.
+            // We can rename "rename_source" into "rename"
+            // if rename detection is enabled,
+            // but the merge will fail with conflicts if this
+            // change is not detected as a rename.
+
+            string repoPath = CloneMergeTestRepo();
+            using (var repo = new Repository(repoPath))
+            {
+                Branch currentBranch = repo.Checkout("rename_source");
+                Assert.NotNull(currentBranch);
+
+                Branch branchToMerge = repo.Branches["rename"];
+
+                // TODO: reasonable defaults should be provided.
+                MergeOptions options = new MergeOptions()
+                {
+                    FindRenames = true,
+                    RenameThreshold = 50,
+                    TargetLimit = 200
+                };
+
+                MergeResult result = repo.Merge(branchToMerge, Constants.Signature, options);
+
+                Assert.Equal(MergeStatus.NonFastForward, result.Status);
+            }
+        }
+
+        [Fact]
         public void FastForwardNonFastForwardableMergeThrows()
         {
             string path = CloneMergeTestRepo();

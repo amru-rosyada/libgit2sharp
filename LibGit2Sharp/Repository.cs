@@ -1279,6 +1279,10 @@ namespace LibGit2Sharp
                 {
                     Version = 1,
                     MergeFileFavorFlags = options.MergeFileFavor,
+                    MergeTreeFlags = options.FindRenames ? GitMergeTreeFlags.GIT_MERGE_TREE_FIND_RENAMES :
+                                                           GitMergeTreeFlags.GIT_MERGE_TREE_NORMAL,
+                    RenameThreshold = (uint) options.RenameThreshold,
+                    TargetLimit = (uint) options.TargetLimit,
                 };
 
             GitCheckoutOptsWrapper checkoutOptionsWrapper = new GitCheckoutOptsWrapper(options);

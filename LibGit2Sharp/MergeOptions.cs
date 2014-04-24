@@ -42,6 +42,22 @@ namespace LibGit2Sharp
         public CheckoutFileConflictStrategy FileConflictStrategy { get; set; }
 
         /// <summary>
+        /// Should merge find renames.
+        /// </summary>
+        public bool FindRenames { get; set; }
+
+        /// <summary>
+        /// Similarity to consider a file renamed.
+        /// </summary>
+        public int RenameThreshold;
+
+        /// <summary>
+        /// Maximum similarity sources to examine (overrides
+        /// 'merge.renameLimit' config (default 200)
+        /// </summary>
+        public int TargetLimit;
+
+        /// <summary>
         /// How to handle conflicts encountered during a merge.
         /// </summary>
         public MergeFileFavor MergeFileFavor { get; set; }
