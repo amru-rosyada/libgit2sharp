@@ -68,5 +68,31 @@ namespace LibGit2Sharp.Core
                 }
             }
         }
+
+        /// <summary>
+        /// Method to translate from <see cref="FileConflictStrategy"/> to <see cref="CheckoutStrategy"/> flags.
+        /// </summary>
+        internal static CheckoutStrategy CheckoutStrategyFromFileConflictStrategy(CheckoutFileConflictStrategy fileConflictStrategy)
+        {
+            CheckoutStrategy flags = default(CheckoutStrategy);
+
+            switch (fileConflictStrategy)
+            {
+                case CheckoutFileConflictStrategy.Ours:
+                    flags = CheckoutStrategy.GIT_CHECKOUT_USE_OURS;
+                    break;
+                case CheckoutFileConflictStrategy.Theirs:
+                    flags = CheckoutStrategy.GIT_CHECKOUT_USE_THEIRS;
+                    break;
+                case CheckoutFileConflictStrategy.Merge:
+                    flags = CheckoutStrategy.GIT_CHECKOUT_CONFLICT_STYLE_MERGE;
+                    break;
+                case CheckoutFileConflictStrategy.Diff3:
+                    flags = CheckoutStrategy.GIT_CHECKOUT_CONFLICT_STYLE_DIFF3;
+                    break;
+            }
+
+            return flags;
+        }
     }
 }

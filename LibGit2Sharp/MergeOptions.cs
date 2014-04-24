@@ -48,7 +48,7 @@ namespace LibGit2Sharp
             {
                 return CheckoutStrategy.GIT_CHECKOUT_SAFE_CREATE |
                        CheckoutStrategy.GIT_CHECKOUT_ALLOW_CONFLICTS |
-                       CheckoutConflictStrategyFlags;
+                       GitCheckoutOptsWrapper.CheckoutStrategyFromFileConflictStrategy(FileConflictStrategy);
             }
         }
 
@@ -58,35 +58,6 @@ namespace LibGit2Sharp
         }
 
         #endregion
-
-        /// <summary>
-        /// Method to translate from <see cref="FileConflictStrategy"/> to <see cref="CheckoutStrategy"/> flags.
-        /// </summary>
-        private CheckoutStrategy CheckoutConflictStrategyFlags
-        {
-            get
-            {
-                CheckoutStrategy flags = default(CheckoutStrategy);
-
-                switch (FileConflictStrategy)
-                {
-                    case CheckoutFileConflictStrategy.Ours:
-                        flags = CheckoutStrategy.GIT_CHECKOUT_USE_OURS;
-                        break;
-                    case CheckoutFileConflictStrategy.Theirs:
-                        flags = CheckoutStrategy.GIT_CHECKOUT_USE_THEIRS;
-                        break;
-                    case CheckoutFileConflictStrategy.Merge:
-                        flags = CheckoutStrategy.GIT_CHECKOUT_CONFLICT_STYLE_MERGE;
-                        break;
-                    case CheckoutFileConflictStrategy.Diff3:
-                        flags = CheckoutStrategy.GIT_CHECKOUT_CONFLICT_STYLE_DIFF3;
-                        break;
-                }
-
-                return flags;
-            }
-        }
     }
 
     /// <summary>
